@@ -25,9 +25,19 @@ for i,x in enumerate (q): # links to generator buses which are not generators
 			pass
 j=1
 for i in u: # assigning islands to generators and the nearest max loads 
-    bus1[i][3]=j
-    #print range(q[j-1])
-    #for k in range(len(q[j-1])
-        #print q[j-1][k]
-        #print k
-    #j=j+1
+    bus1[i][3]=j #generators are assigned island number
+    r=len(q[j-1]) #length of the nodes to be checked 
+    m=[bus[q[j-1][k]-1][2] for k in range(r)] #check all the nearby connected load nodes
+    bus1[q[m.index(min(m))][j-1]-1][3]=j #island numbers are alloted to the load nodes
+    j=j+1
+print bus1
+
+
+
+
+
+
+
+
+
+
