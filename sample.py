@@ -12,7 +12,7 @@ v1 = [i+1 for i in v] #all load bus numbers
 gen = [bus[i-1] for i in u] #all generator bus values
 load = [bus[i-1] for i in v] #all load bus values
 p=[[i+1 for i,x in enumerate (link[j]) if x==1] for j in u] #links to generator buses
-q=p[:]
+q=p[:] # q should be change but p should remain constant so that I can use it later. But p is also changing.
 for i,x in enumerate (q):
 	for ux in u1:
 		try:
@@ -20,5 +20,4 @@ for i,x in enumerate (q):
 			del q[i][p1]
 		except:
 			pass
-print p
-print q
+
