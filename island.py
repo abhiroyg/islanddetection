@@ -26,13 +26,13 @@ print "connections:\n", connections
 
 # Assuming the order of stuff in buses and connections is same.
 # And connections rows and columns also have same order.
-generator_indices = [i for i, x in enumerate(buses[1]) if x == 1]
-node_indices = [i for i, x in enumerate(buses[1]) if x == 2]
+generator_indices = [i for i, x in enumerate(j[1] for j in buses) if x == 1]
+node_indices = [i for i, x in enumerate(j[1] for j in buses) if x == 2]
 print "generator indices:", generator_indices
 print "node indices:", node_indices
 
-generator_loads = [buses[2][i] for i in generator_indices]
-node_loads = [-buses[2][i] for i in node_indices]
+generator_loads = [buses[i][2] for i in generator_indices]
+node_loads = [-buses[i][2] for i in node_indices]
 print "generator loads:", generator_loads
 print "node loads:", node_loads
 
@@ -56,7 +56,7 @@ islands = []
 # Go from the highest producing to lowest producing
 for gi in sorted_generators:
     # If all nodes are connected / no nodes are left to connect to
-    if not 0 in [buses[3][i] for i in node_indices]:
+    if not 0 in [buses[i][3] for i in node_indices]:
         excess_generators = True
         break
 
@@ -65,13 +65,13 @@ for gi in sorted_generators:
     # and also has highest load among all the nodes
     # connected to this generator.
     try:
-        node_index = next(ni for ni in sorted_nodes if buses[3][ni] == 0 and connections[gi][ni] == 1)
+        node_index = next(ni for ni in sorted_nodes if buses[ni][3] == 0 and connections[gi][ni] == 1)
 
         # Form the island and add this node to the island.
-        buses[3][gi] = island_count
-        buses[3][node_index] = island_count
+        buses[gi][3] = island_count
+        buses[node_index][3] = island_count
 
-        islands.append([island_count, [gi, node_index], buses[2][gi] + buses[2][node_index]])
+        islands.append([island_count, [gi, node_index], buses[gi][2] + buses[node_index][2]])
 
         island_count += 1
     except:
@@ -88,7 +88,7 @@ for gi in sorted_generators:
 
 # Get all the nodes that are yet to be connected.
 # They are in sorted order.
-rem_nodes = [ni for ni in sorted_nodes if buses[3][ni] == 0]
+rem_nodes = [ni for ni in sorted_nodes if buses[ni][3] == 0]
 
 sorted_islands = sorted(islands, lambda x: x[2])
 
