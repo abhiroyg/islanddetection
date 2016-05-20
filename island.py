@@ -23,6 +23,7 @@ and `node`s positions in the matrix.
 with open('links.txt', 'r') as f:
     connections = [[int(x) for x in line.split()] for line in f]
 print "connections:\n", connections
+print
 
 # Assuming the order of stuff in buses and connections is same.
 # And connections rows and columns also have same order.
@@ -30,18 +31,20 @@ generator_indices = [i for i, x in enumerate(buses) if x[1] == 1]
 node_indices = [i for i, x in enumerate(buses) if x[1] == 2]
 print "generator indices:", generator_indices
 print "node indices:", node_indices
+print
 
 generator_loads = [buses[i][2] for i in generator_indices]
 node_loads = [-buses[i][2] for i in node_indices]
 print "generator loads:", generator_loads
 print "node loads:", node_loads
+print
 
 # Sort the generators based on their `produce`
 # These are the indices to access `buses`
 # 
 # Got this code from most voted comment of the accepted answer:
 # http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
-sorted_generators = [x for (y, x) in sorted(zip(generator_loads, generator_indices), key=lambda pair: pair[0])]
+sorted_generators = [x for (y, x) in sorted(zip(generator_loads, generator_indices), key=lambda pair: pair[0], reverse=True)]
 print "sorted generator indices:", sorted_generators
 
 # Sort the nodes based on their `need`
@@ -49,8 +52,9 @@ print "sorted generator indices:", sorted_generators
 # 
 # Got this code from most voted comment of the accepted answer:
 # http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
-sorted_nodes = [x for (y, x) in sorted(zip(node_loads, node_indices), key=lambda pair: pair[0])]
+sorted_nodes = [x for (y, x) in sorted(zip(node_loads, node_indices), key=lambda pair: pair[0], reverse=True)]
 print "sorted node indices:", sorted_nodes
+print
 
 excess_generators = False
 island_count = 1
@@ -104,11 +108,16 @@ for gi in sorted_generators:
 # Get all the nodes that are yet to be connected.
 # They are in sorted order.
 rem_nodes = sorted_nodes
+print "rem nodes:", rem_nodes
+if len(rem_nodes) > 0:
+    print "islands formed till now are:"
+    for island in islands:
+        print island[0], island[1], island[2]
 
 # The second argument of `sorted` tells what criteria to use to sort.
 # Here we are using 3rd element of each island i.e., the combined/resultant
 # power of the island. It can be -ve (or) +ve.
-sorted_islands = sorted(islands, lambda island: island[2])
+sorted_islands = sorted(islands, key=lambda island: island[2])
 
 # Go from the highest demanding to lowest demanding
 for ni in rem_nodes:
@@ -123,7 +132,7 @@ for ni in rem_nodes:
         sorted_islands[island_index][1].append(ni)
         sorted_islands[island_index][2] += buses[ni][2]
 
-        sorted_islands = sorted(sorted_islands, lambda island: island[2])
+        sorted_islands = sorted(sorted_islands, key=lambda island: island[2])
     except:
         #If the node is not connected to any generator.
         print "This node is not connected to any generator:", ni
