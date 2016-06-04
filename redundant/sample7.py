@@ -2,11 +2,11 @@
 with open('links.txt') as f:
     link = [[int(x) for x in line.split( )] for line in f ]
 with open('buses1.txt') as f:
-    bus = [[int(x) for x in line.split( )] for line in f ]
+    bus = [[float(x) for x in line.split( )] for line in f ]
 import copy
 bus1 = copy.deepcopy(bus) #deep copy is to be used as it is a copy of list of lists, else bus1=bus[:] would suffice
-u = [i for i,x in enumerate([i[1] for i in bus]) if x==1] #generator bus index
-v = [j for j,x in enumerate([i[1] for i in bus]) if x==2] #load bus index
+u = [i for i,x in enumerate([i[2] for i in bus]) if x>0] #generator bus index
+v = [j for j,x in enumerate([i[2] for i in bus]) if x<=0] #load bus index
 p=[[i+1 for i,x in enumerate (link[j]) if x==1] for j in u] #links to generator buses
 u1 = [i+1 for i in u] #all generator bus numbers
 import copy
@@ -51,18 +51,24 @@ nodes_order=[i[0] for i in nz]
 while (len(unconn_nodes)!=0):
     if max(island_imbalance)<=0:
         break
-    for mi in assign_order:     
+    for mi in assign_order:
+        print "order",assign_order
         for mj in nodes_order:
+            print "node assignment order",nodes_order
+            print "order element(gen)",mi     
             for mk in island_all[mi]:
-                if link[mj][mk]==1 and island_imbalance[mi]>0: 
-                        bus1[mj][3]=mi+1 
+                    print "element in island is",mk
+                    print "the node we are checking", mj
+                    if link[mj][mk]==1 and island_imbalance[mi]>0: 
+                        bus1[mj][3]=mi+1
+                        print "the bus which is getting connected ", bus1[mj][0]-1 
                         island_imbalance[mi]+=bus1[mj][2]
                         unconn_nodes=[i for i,x in enumerate(i[3] for i in bus1) if x==0]
-                        print island_all[mi]
-                        island_all[mi]+=[nodes_order[0]]
-                        print island_all[mi]
+                        print "island",island_all[mi]
                         try:
-                            no=nodes_order.pop(0)
+                            no=nodes_order.pop(nodes_order.index(mj))
+                            island_all[mi]+=[mj]
+                            print "island after adding node ",island_all[mi]
                         except:
                             break                            
 island_fin=[]
