@@ -44,7 +44,11 @@ print
 # 
 # Got this code from most voted comment of the accepted answer:
 # http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
-sorted_generators = [x for (y, x) in sorted(zip(generator_loads, generator_indices), key=lambda pair: pair[0], reverse=True)]
+sorted_generators = [x for (y, x) in sorted(
+                                        zip(generator_loads, generator_indices),
+                                        key=lambda pair: pair[0],
+                                        reverse=True
+                                    )]
 print "sorted generator indices:", sorted_generators
 
 # Sort the nodes based on their `need`
@@ -52,7 +56,11 @@ print "sorted generator indices:", sorted_generators
 # 
 # Got this code from most voted comment of the accepted answer:
 # http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
-sorted_nodes = [x for (y, x) in sorted(zip(node_loads, node_indices), key=lambda pair: pair[0], reverse=True)]
+sorted_nodes = [x for (y, x) in sorted(
+                                    zip(node_loads, node_indices),
+                                    key=lambda pair: pair[0],
+                                    reverse=True
+                                )]
 print "sorted node indices:", sorted_nodes
 print
 
@@ -80,16 +88,24 @@ for gi in sorted_generators:
     # and also has highest load among all the nodes
     # connected to this generator.
     try:
-        node_index = next(ni for ni in sorted_nodes if buses[ni][3] == 0 and connections[gi][ni] == 1)
+        node_index = next(
+            ni for ni in sorted_nodes 
+                if buses[ni][3] == 0 and connections[gi][ni] == 1)
 
         # Form the island and add this node to the island.
         buses[gi][3] = island_count
         buses[node_index][3] = island_count
 
-        islands.append([island_count, [gi, node_index], buses[gi][2] + buses[node_index][2]])
+        islands.append([
+            island_count,
+            [gi, node_index],
+            buses[gi][2] + buses[node_index][2]
+        ])
 
-        # This will make the for loop in `next` shorter and remove the list comprehension for `rem_nodes`.
-        # `node_index` is an element of `sorted_nodes` and not an index pointing to one of its elements.
+        # This will make the for loop in `next` shorter and 
+        # remove the list comprehension for `rem_nodes`.
+        # `node_index` is an element of `sorted_nodes` and 
+        # not an index pointing to one of its elements.
         sorted_nodes.remove(node_index)
 
         island_count += 1
@@ -103,21 +119,48 @@ for gi in sorted_generators:
 
         # And, since we are not iterating on number of generators
         # still not connected, we will not be in an infinite loop.
-        print "This generator is not connected to any node:", gi
+        print "This generator is not connected to any node:", gi, buses[gi]
+
+if excess_generators:
+    print "There are more generators than nodes."
+    print "Remaining generators:", [gi for gi in sorted_generators
+                                        if buses[gi][3] == 0]
 
 # Get all the nodes that are yet to be connected.
 # They are in sorted order.
 rem_nodes = sorted_nodes
 print "rem nodes:", rem_nodes
+
 if len(rem_nodes) > 0:
     print "islands formed till now are:"
-    for island in islands:
-        print island[0], island[1], island[2]
+else:
+    print "The islands formed are:"
+
+for island in islands:
+    print island[0], island[1], island[2]
+
+if len(rem_nodes) == 0:
+    exit()
+elif all(island[2] <= 0 for island in islands):
+    print "No island is available to take more load. Exiting..."
+    print "Remaining nodes:", rem_nodes
+    exit()
 
 # The second argument of `sorted` tells what criteria to use to sort.
 # Here we are using 3rd element of each island i.e., the combined/resultant
 # power of the island. It can be -ve (or) +ve.
 sorted_islands = sorted(islands, key=lambda island: island[2])
+
+ii = 0 # island index
+while True:
+    if sorted_islands[ii][2] <= 0:
+        ii += 1
+        continue
+
+    # Get all the nodes connected to this island
+    # sort them and choose the node with max load (absolute value)
+
+
 
 # Go from the highest demanding to lowest demanding
 for ni in rem_nodes:
@@ -125,7 +168,10 @@ for ni in rem_nodes:
     # and connected to this node.
     try:
         # isl[1][0] is the index in `buses` of `generator` of that island.
-        island_index = next(i for i, isl in enumerate(sorted_islands) if connections[ni][isl[1][0]] == 1)
+        island_index = next(
+            i for i, isl in enumerate(sorted_islands) 
+                if connections[ni][isl[1][0]] == 1
+        )
 
         # Add this node to the island.
         buses[ni][3] = sorted_islands[island_index][0]
@@ -135,10 +181,7 @@ for ni in rem_nodes:
         sorted_islands = sorted(sorted_islands, key=lambda island: island[2])
     except:
         #If the node is not connected to any generator.
-        print "This node is not connected to any generator:", ni
-
-if excess_generators:
-    print "There are more generators than nodes."
+        print "This node is not connected to any generator:", ni, buses[ni]
 
 print "The islands formed are:"
 for island in islands:
