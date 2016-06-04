@@ -60,6 +60,9 @@ while (len(unconn_nodes)!=0):
                         island_imbalance[mi]+=bus1[mj][2]
                         unconn_nodes=[i for i,x in enumerate(i[3] for i in bus1) if x==0]
                         nodes_order.pop(0)
+                        print nodes_order
+                else:
+                    return
 island_fin=[]
 for isl in range(1,max_islands+1,1):
     fin_islands=[j[3] for j in bus1]

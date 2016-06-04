@@ -51,24 +51,18 @@ nodes_order=[i[0] for i in nz]
 while (len(unconn_nodes)!=0):
     if max(island_imbalance)<=0:
         break
-    for mi in assign_order:
-        print "node assignment order",nodes_order
-        for mk in island_all[mi]:
-            print "order",assign_order
-            print "order element(gen)",mi     
-            for mj in nodes_order:
-                print "element in island is",mk
-                print "the node we are checking", mj
+    for mi in assign_order:     
+        for mj in nodes_order:
+            for mk in island_all[mi]:
                 if link[mj][mk]==1 and island_imbalance[mi]>0: 
-                        bus1[mj][3]=mi+1
-                        print "the bus which is getting connected ", bus1[mj][0]-1 
+                        bus1[mj][3]=mi+1 
                         island_imbalance[mi]+=bus1[mj][2]
                         unconn_nodes=[i for i,x in enumerate(i[3] for i in bus1) if x==0]
-                        print "island",island_all[mi]
+                        print island_all[mi]
+                        island_all[mi]+=[nodes_order[0]]
+                        print island_all[mi]
                         try:
-                            no=nodes_order.pop(nodes_order.index(mj))
-                            island_all[mi]+=[mj]
-                            print "island after adding node ",island_all[mi]
+                            no=nodes_order.pop(0)
                         except:
                             break                            
 island_fin=[]
