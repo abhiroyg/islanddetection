@@ -45,10 +45,12 @@ output=[]
 connections=[i[3] for i in bus1]
 max_islands=max([i[3] for i in bus1])
 non_connects_index= [i for i,x in enumerate(connections) if x==0]
-for j in range(1,max_islands+1,1):
+for j in range(max_islands+1):
     imbalance_array=[bus[i][2] for i,x in enumerate(k[3] for k in bus1) if x==j]
     output+=[imbalance_array]
-island_imbalance=[sum(output[i]) for i in range(1,max_islands+1,1)]
+#print output[1]
+    #print imbalance_array
+island_imbalance=[sum(output[i]) for i in range(max_islands+1)]
 unconn_nodes=[i for i,x in enumerate(i[3] for i in bus1) if x==0]
 while (len(unconn_nodes)!=0):
     for mi in range(1,max_islands+1,1):        
