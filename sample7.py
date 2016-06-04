@@ -2,11 +2,11 @@
 with open('links.txt') as f:
     link = [[int(x) for x in line.split( )] for line in f ]
 with open('buses1.txt') as f:
-    bus = [[int(x) for x in line.split( )] for line in f ]
+    bus = [[float(x) for x in line.split( )] for line in f ]
 import copy
 bus1 = copy.deepcopy(bus) #deep copy is to be used as it is a copy of list of lists, else bus1=bus[:] would suffice
-u = [i for i,x in enumerate([i[1] for i in bus]) if x==1] #generator bus index
-v = [j for j,x in enumerate([i[1] for i in bus]) if x==2] #load bus index
+u = [i for i,x in enumerate([i[2] for i in bus]) if x>0] #generator bus index
+v = [j for j,x in enumerate([i[2] for i in bus]) if x<=0] #load bus index
 p=[[i+1 for i,x in enumerate (link[j]) if x==1] for j in u] #links to generator buses
 u1 = [i+1 for i in u] #all generator bus numbers
 import copy
@@ -51,10 +51,10 @@ nodes_order=[i[0] for i in nz]
 while (len(unconn_nodes)!=0):
     if max(island_imbalance)<=0:
         break
-    for mj in nodes_order:
-        print "node assignment order",nodes_order
-        for mi in assign_order:
-            print "order",assign_order
+    for mi in assign_order:
+        print "order",assign_order
+        for mj in nodes_order:
+            print "node assignment order",nodes_order
             print "order element(gen)",mi     
             for mk in island_all[mi]:
                     print "element in island is",mk

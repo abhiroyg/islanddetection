@@ -1,7 +1,7 @@
 #!/usr/bin/python
-with open('links.txt') as f:
+with open('links1.txt') as f:
     link = [[int(x) for x in line.split( )] for line in f ]
-with open('buses1.txt') as f:
+with open('buses2.txt') as f:
     bus = [[int(x) for x in line.split( )] for line in f ]
 import copy
 bus1 = copy.deepcopy(bus) #deep copy is to be used as it is a copy of list of lists, else bus1=bus[:] would suffice
