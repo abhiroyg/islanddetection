@@ -7,8 +7,8 @@ import copy
 bus1 = copy.deepcopy(bus) #deep copy is to be used as it is a copy of list of lists, else bus1=bus[:] would suffice
 u = [i for i,x in enumerate([i[1] for i in bus]) if x==1] #generator bus index
 v = [j for j,x in enumerate([i[1] for i in bus]) if x==2] #load bus index
-p=[[i+1 for i,x in enumerate (link[j]) if x==1] for j in u] #links to generator buses
-u1 = [i+1 for i in u] #all generator bus numbers
+p=[[i for i,x in enumerate (link[j]) if x==1] for j in u] #links to generator buses
+u1 = [i for i in u] #all generator bus numbers
 import copy
 q = copy.deepcopy(p) # q is a copy of p which are links to generator buses
 for i,x in enumerate (q): # links to generator buses which are not generators, there might be a scenario where a single generator is connected to another generator, which we want to remove that scenario. The values are stored in q.
@@ -19,17 +19,13 @@ for i,x in enumerate (q): # links to generator buses which are not generators, t
 		except:
 			pass
 j=1
-#print q
 for i in u: # assigning islands to generators and the nearest max loads 
     bus1[i][3]=j #generators are assigned island number
     r=len(q[j-1]) #length of the nodes to be checked 
-    m=[bus[q[j-1][k]-1][2] for k in range(r)] #check all the nearby connected load nodes
-    #print m
-    #print min(m)
-    bus1[q[m.index(min(m))][j-1]-1][3]=j #island numbers are alloted to the load nodes
+    m=[bus[q[j-1][k]][2] for k in range(r)] #check all the nearby connected load nodes
+    bus1[q[j-1][m.index(min(m))]][3]=j #island numbers are alloted to the load nodes
     j=j+1
 island_number=[i[3] for i in bus1] #we store all the island numbers in the 4th coloumn of the bus1, we dont touch bus 
-#print island_number
 max_islands=max(island_number) #for using it later
 island_all=[] #To sort all islands are in the order
 for l in range(1,max_islands+1,1): #we want only the island assigned 1 or 2 or 3, no need for 0(unconnected nodes)
@@ -51,28 +47,29 @@ assign_order=[i[0] for i in az] # In this order the islands will be assigned
 for i in unconn_nodes:#Sorting nodes with respect to the weights of the nodes
     sort_node.append([i,bus[i][2]])
 nz = sorted(sort_node, key=lambda x: x[1])
+#print "Fuck you nz", nz
 nodes_order=[i[0] for i in nz]
-print assign_order
-print nodes_order
-while (len(unconn_nodes)!=0): #Run untill all the nodes are connected to either of the islands or break when all the imbalances are <0(Which means adding more nodes will create more imbalance)
-    if max(island_imbalance)<=0: # When all the imbalances become non positive break
+while (len(unconn_nodes)!=0):
+    if max(island_imbalance)<=0:
         break
-    for mi in assign_order: #Order in which the islands have to be filled with nodes
-        #print mi        
-        for mj in nodes_order: #Order in which the nodes have to be assigned to the islands
-            print mj, nodes_order
-            for mk in island_all[mi]: #For all the elements in the island presently
-                print mk
-                if link[mj][mk]==1 and island_imbalance[mi]>0: #If the nodes are connected and if island can take a node then
-                        bus1[mj][3]=mi+1 #change the number in the bus1 to the island number
-                        island_imbalance[mi]+=bus1[mj][2] #Change the island imbalance
-                        print island_imbalance
-                        unconn_nodes=[i for i,x in enumerate(i[3] for i in bus1) if x==0] #Update unconnected nodes
-                        print unconn_nodes
+    for mi in assign_order:
+        #print "node assignment order",nodes_order
+        for mk in island_all[mi]:
+            #print "order",assign_order
+            #print "order element(gen)",mi     
+            for mj in nodes_order:
+                #print "element in island is",mk
+                #print "the node we are checking", mj
+                if link[mj][mk]==1 and island_imbalance[mi]>0: 
+                        bus1[mj][3]=mi+1
+                        #print "the bus which is getting connected ", bus1[mj][0]-1 
+                        island_imbalance[mi]+=bus1[mj][2]
+                        unconn_nodes=[i for i,x in enumerate(i[3] for i in bus1) if x==0]
+                        #print "island",island_all[mi]
                         try:
-                            #island_all[mi].append(
-                            nodes_order.pop(0)#)
-                            print island_all[mi]
+                            no=nodes_order.pop(nodes_order.index(mj))
+                            island_all[mi]+=[mj]
+                            #print "island after adding node ",island_all[mi]
                         except:
                             break                            
 island_fin=[]
@@ -90,8 +87,17 @@ for mii in range(max_islands):
             for mil in island_fin[mij]:
                 if link[mik][mil]!=0 and mii!=mij:
                     open_lines+=[[mik,mil]]
-#len_open=len(open_lines)/2
-#lines_to_be_opened=[]
-#for i in range(len_open):
-#    lines_to_be_opened += [open_lines[i]]
 print "The lines which have to be opened are", open_lines 
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -48,11 +48,13 @@ for i in unconn_nodes:
     sort_node.append([i,bus[i][2]])
 nz = sorted(sort_node, key=lambda x: x[1])
 nodes_order=[i[0] for i in nz]
-print nodes_order
 while (len(unconn_nodes)!=0):
-    for mi in assign_order:        
+    for mi in assign_order:
+        print assign_order        
         for mj in nodes_order:
+            print nodes_order
             for mk in island_all[mi]:
+                print island_all[mi]
                 if link[mj][mk]==1 and island_imbalance[mi]>0:
                         bus1[mj][3]=mi+1
                         island_imbalance[mi]+=bus1[mj][2]

@@ -67,4 +67,3 @@ for isl in range(1,max_islands+1,1):
 print "The total number of islands are :", max_islands
 for px in range(max_islands):
     print "The island is: " , island_fin[px]
-
